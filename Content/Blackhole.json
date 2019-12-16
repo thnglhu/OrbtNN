@@ -1,0 +1,26 @@
+{ "frames": [
+   {
+    "filename": "Blackhole.png",
+    "frame": { "x": 0, "y": 0, "w": 143, "h": 143 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 143, "h": 143 },
+    "sourceSize": { "w": 143, "h": 143 },
+    "duration": 100
+   }
+ ],
+ "meta": {
+  "app": "http://www.aseprite.org/",
+  "version": "1.2.16.3-x64",
+  "format": "RGBA8888",
+  "size": { "w": 143, "h": 143 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Layer", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}
