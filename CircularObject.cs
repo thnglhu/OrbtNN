@@ -19,7 +19,7 @@ namespace OrbtNN
             Position = position;
             ready = true;
             this.sprite = sprite;
-            radius = sprite.Current.Width / 2;
+            radius = sprite.Current.Height / 2;
             opacity = 1f;
             Update(null);
         }

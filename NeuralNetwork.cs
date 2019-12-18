@@ -23,12 +23,12 @@ namespace OrbtNN
                 Random random = new Random();
                 for (int index = 0; index < hidden_number * (input_number + 1); index++)
                 {
-                    chromosome[index] = (float)(200 * random.NextDouble() - 100);
+                    chromosome[index] = (float)(random.NextDouble());
                 }
             }
         }
         private NeuralNetwork() { }
-        public bool Activate(float[] input)
+        public float Activate(float[] input)
         {
             float final = biases[1] * bias_weight[1];
             for (int index = 0; index < hidden_number; index++)
@@ -38,7 +38,7 @@ namespace OrbtNN
                     result += input[preindex] * chromosome[index * input_number + preindex];
                 final += chromosome[input_number * hidden_number + index] * result;
             }
-            return final < 0;
+            return final;
         }
         public NeuralNetwork Clone()
         {
@@ -57,7 +57,7 @@ namespace OrbtNN
             {
                 int index = random.Next(0, bound + 2);
                 if (index < bound) clone.chromosome[index] = (float)(200 * random.NextDouble() - 100);
-                else clone.bias_weight[index - bound] = (float)(200 * random.NextDouble() - 100);
+                else clone.bias_weight[index - bound] = (float)(random.NextDouble());
                 chance *= 0.95f;
             }
             return clone;

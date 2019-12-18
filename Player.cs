@@ -89,5 +89,9 @@ namespace OrbtNN
         {
             set => max = value;
         }
+        public virtual void Test(GameTime time)
+        {
+
+        }
     }
 }

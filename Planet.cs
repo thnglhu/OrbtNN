@@ -47,9 +47,10 @@ namespace OrbtNN
         {
             if (angle > 2 * (float)Math.PI) angle -= 2 * (float)Math.PI;
         }
+        public Blackhole Pivot { get => origin; }
         public float Mass { set => mass = value; get => mass; }
         public float Dist { get => distance; }
-        public float Velocity { set => velocity = value; }
+        public float Velocity { set => velocity = value; get => velocity; }
         public float Angle { get => angle; }
     }
 }

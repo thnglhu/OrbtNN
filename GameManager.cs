@@ -10,10 +10,13 @@ namespace OrbtNN
 {
     class GameManager
     {
+        static float SCALE = .5f;
+        static int player_vel = 600;
+        static int player_mas = 300;
         GameController controller;
         // HashSet<Planet> planets = new HashSet<Planet>();
         Planet[] planets = new Planet[360];
-        Computer ai;
+        PlayerPlus player;
         Blackhole blackhole;
         float next_spawn, spawn_time;
         int width, height;
@@ -27,24 +30,21 @@ namespace OrbtNN
             blackhole = new Blackhole(controller);
             blackhole.Initialize(SpriteFactory.GetSprite("Blackhole"), new Vector2(width / 2, height / 2), 10);
             blackhole.Extra.Add(SpriteFactory.GetSprite("BlackHoleCover"));
-            ai = new Computer(controller);
-            ai.planets = planets;
-            ai.width = width;
-            ai.height = height;
-            ai.threshhold = threshhold;
-            ai.Maximum = 200;
-            ai.Initialize(blackhole, SpriteFactory.GetSprite("Earth"), 0, 250f, 10, 300, 600);
+            player = new PlayerPlus(controller);
+            player.Maximum = 200;
+            player.Initialize(blackhole, SpriteFactory.GetSprite("Earth"), 0, 250f, 10, player_mas * SCALE, player_vel * SCALE);
             next_spawn = 0;
             spawn_time = .1f;
         }
         public void Update(GameTime game_time)
         {
+            player.Update(game_time);
             blackhole.Update(game_time);
             Random random = new Random();
             next_spawn -= (float)game_time.ElapsedGameTime.TotalSeconds;
             if (next_spawn <= 0)
             {
-                next_spawn += spawn_time;
+                next_spawn += spawn_time / SCALE;
                 spawn_time *= 0.95f;
                 if (spawn_time < 0.1f) spawn_time = 0.1f;
                 Planet planet = new Planet(controller);
@@ -65,11 +65,11 @@ namespace OrbtNN
                         distance = Math.Abs(width / (float)(2 * Math.Cos(angle)));
                     }
                     distance -= planet.Radius + blackhole.Radius;
-                    planet.Initialize(blackhole, SpriteFactory.GetSprite("Circle"), angle, distance, radius, 1.5f * mass);
+                    planet.Initialize(blackhole, SpriteFactory.GetSprite("Circle"), angle, distance, radius, 1.5f * mass * SCALE);
                     planets[int_angle] = planet;
                 }
             }
-            if (ai.Check(blackhole))
+            if (player.Check(blackhole))
             {
                 Reset(); return;
             }
@@ -85,15 +85,15 @@ namespace OrbtNN
                     }
                     else
                     {
-                        if (ai.Check(planet) == false)
+                        planet.Update(game_time);
+                        if (player.Check(planet) == false)
                         {
                             Reset(); return;
                         }
-                        planet.Update(game_time);
                     }
                 }
             }
-            ai.Update(game_time);
+            player.Test(game_time);
         }
         public void Draw()
         {
@@ -121,8 +121,8 @@ namespace OrbtNN
                 // controller.DrawLine(blackhole.Position, planet.Position, new Color(0.25f + planet.Mass / 500f, 0f, 0f));
                 planet.Draw();
             }
-            // controller.DrawLine(blackhole.Position, player.Position, Color.Green);
-            ai.Draw();
+            //controller.DrawVector(player.Position, blackhole.Position, Color.Green);;
+            player.Draw();
             //controller.DrawString(blackhole.Position, round.ToString());
         }
         public void Reset()
@@ -130,15 +130,15 @@ namespace OrbtNN
             next_spawn = 0;
             spawn_time = .1f;
             for (int index = 0; index < 360; index++) planets[index] = null;
-            ai.Initialize(blackhole, SpriteFactory.GetSprite("Earth"), 0, 250f, 10, 300, 600);
+            player.Initialize(blackhole, SpriteFactory.GetSprite("Earth"), 0, 250f, 10, player_mas * SCALE, player_vel * SCALE);
         }
         public void Press()
         {
-            ai.Press();
+            player.Press();
         }
         public void Release()
         {
-            ai.Release();
+            player.Release();
         }
     }
 }

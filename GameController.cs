@@ -106,6 +106,15 @@ namespace OrbtNN
             if (begin.Y > end.Y) angle = MathHelper.TwoPi - angle;
             spriteBatch.Draw(pixel, rect, null, color, angle, Vector2.Zero, SpriteEffects.None, 0);
         }
+        public void DrawVector(Vector2 begin, Vector2 end, Color color, int width = 1)
+        {
+            DrawLine(begin, end, color, width);
+            double angle = Math.Atan2(end.Y - begin.Y, end.X - begin.X);
+            double delta = 160 * Math.PI / 180;
+            Vector2 extra = new Vector2(10 * (float)Math.Cos(angle), 10 * (float)Math.Sin(angle ));
+            DrawLine(end, Vector2.Add(end, Rotate(extra, delta)), color, width);
+            DrawLine(end, Vector2.Add(end, Rotate(extra, -delta)), color, width);
+        }
         public void DrawTexture(Texture2D texture, Vector2 position, float opacity = 1f)
         {
             position = Vector2.Add(position, new Vector2(-texture.Width / 2, -texture.Height / 2));
@@ -115,6 +124,12 @@ namespace OrbtNN
         {
             Texture2D texture = sprite.Current;
             DrawTexture(texture, position, opacity);
+        }
+        public static Vector2 Rotate(Vector2 vector, double angle)
+        {
+            float cos = (float)Math.Cos(angle);
+            float sin = (float)Math.Sin(angle);
+            return new Vector2(cos * vector.X - sin * vector.Y, sin * vector.X + cos * vector.Y);
         }
     }
 }
