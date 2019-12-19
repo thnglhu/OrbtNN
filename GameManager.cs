@@ -10,15 +10,15 @@ namespace OrbtNN
 {
     class GameManager
     {
-        static float SCALE = .5f;
-        static int player_vel = 600;
+        static float SCALE = 1f;
+        static int player_vel = 400;
         static int player_mas = 300;
         GameController controller;
         // HashSet<Planet> planets = new HashSet<Planet>();
         Planet[] planets = new Planet[360];
-        PlayerPlus player;
+        Computer player;
         Blackhole blackhole;
-        float next_spawn, spawn_time;
+        float next_spawn, spawn_time = 0.2f;
         int width, height;
         float threshhold;
         public GameManager(GameController controller, int width, int height)
@@ -30,11 +30,10 @@ namespace OrbtNN
             blackhole = new Blackhole(controller);
             blackhole.Initialize(SpriteFactory.GetSprite("Blackhole"), new Vector2(width / 2, height / 2), 10);
             blackhole.Extra.Add(SpriteFactory.GetSprite("BlackHoleCover"));
-            player = new PlayerPlus(controller);
+            player = new Computer(controller, 100);
             player.Maximum = 200;
             player.Initialize(blackhole, SpriteFactory.GetSprite("Earth"), 0, 250f, 10, player_mas * SCALE, player_vel * SCALE);
             next_spawn = 0;
-            spawn_time = .1f;
         }
         public void Update(GameTime game_time)
         {
@@ -45,11 +44,9 @@ namespace OrbtNN
             if (next_spawn <= 0)
             {
                 next_spawn += spawn_time / SCALE;
-                spawn_time *= 0.95f;
-                if (spawn_time < 0.1f) spawn_time = 0.1f;
                 Planet planet = new Planet(controller);
                 float radius = 10;
-                float mass = 100 + (float)(random.NextDouble() * 200);
+                float mass = 100;// + (float)(random.NextDouble() * 200);
                 int int_angle = random.Next(0, 360);
                 if (planets[int_angle] == null)
                 {
@@ -86,7 +83,7 @@ namespace OrbtNN
                     else
                     {
                         planet.Update(game_time);
-                        if (player.Check(planet) == false)
+                        if (player.Check(planet))
                         {
                             Reset(); return;
                         }
@@ -128,7 +125,6 @@ namespace OrbtNN
         public void Reset()
         {
             next_spawn = 0;
-            spawn_time = .1f;
             for (int index = 0; index < 360; index++) planets[index] = null;
             player.Initialize(blackhole, SpriteFactory.GetSprite("Earth"), 0, 250f, 10, player_mas * SCALE, player_vel * SCALE);
         }
@@ -139,6 +135,10 @@ namespace OrbtNN
         public void Release()
         {
             player.Release();
+        }
+        public void Debug(bool value)
+        {
+            if (player.Display != value) player.Display = value;
         }
     }
 }

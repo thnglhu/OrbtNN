@@ -10,10 +10,9 @@ namespace OrbtNN
 {
     class Player : Planet
     {
-        int round;
-        int risk;
         float backup;
-        public bool alive = true;
+        float total;
+        private bool alive = true;
         protected float max = float.PositiveInfinity;
         HashSet<Planet> bonus = new HashSet<Planet>();
         public Player(GameController controller) : base(controller) { }
@@ -22,40 +21,34 @@ namespace OrbtNN
             if (distance > max) distance = max;
             Initialize(origin, sprite, angle, distance, radius, mass);
             this.velocity = velocity;
-            round = 0;
-            risk = 0;
             bonus.Clear();
             backup = mass;
-            alive = true;
+            Alive = true;
+            total = 0;
         }
         protected override void Move(GameTime game_time)
         {
             base.Move(game_time);
             if (distance > max) distance = max;
         }
-        public int Total()
+        public decimal Total()
         {
-            return round;
+            return (decimal)total;
         }
-        protected override void Modular()
+        protected override void Move(float angle)
         {
-            if (angle > 2 * (float)Math.PI)
-            {
-                round++;
-                bonus.Clear();
-            }
-            base.Modular();
+            base.Move(angle);
+            total += angle;
         }
         public virtual bool Check(Planet planet)
         {
             float dist = Distance(this, planet);
-            if (dist < 0) return false;
+            if (dist < 0) return true;
             else if (dist < 20 && !bonus.Contains(planet))
             {
-                risk++;
                 bonus.Add(planet);
             }
-            return true;
+            return false;
         }
         public virtual bool Check(Blackhole blackhole)
         {
@@ -69,7 +62,7 @@ namespace OrbtNN
             }
         }
         bool pressed = false;
-        public void Press()
+        public virtual void Press()
         {
             if (!pressed)
             {
@@ -77,7 +70,7 @@ namespace OrbtNN
                 Resist = mass * 3 / 4;
             }
         }
-        public void Release()
+        public virtual void Release()
         {
             if (pressed)
             {
@@ -89,6 +82,8 @@ namespace OrbtNN
         {
             set => max = value;
         }
+        public bool Alive { get => alive; set => alive = value; }
+
         public virtual void Test(GameTime time)
         {
 

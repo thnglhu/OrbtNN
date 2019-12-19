@@ -8,6 +8,11 @@ using System.Threading.Tasks;
 
 namespace OrbtNN
 {
+    public enum Align
+    {
+        CENTER,
+        CORNER
+    }
     public class Sprite
     {
         Texture2D[] spritesheet;

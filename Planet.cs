@@ -33,8 +33,8 @@ namespace OrbtNN
                 if (game_time != null)
                 {
                     Move(game_time);
-                    angle += (float)Math.Atan(velocity * (float)game_time.ElapsedGameTime.TotalSeconds / (distance +origin.Radius));
-                    Modular();
+                    Move((float)Math.Atan(velocity * (float)game_time.ElapsedGameTime.TotalSeconds / (distance + origin.Radius)));
+                    if (angle > 2 * (float)Math.PI) angle -= 2 * (float)Math.PI;
                 }
                 Position = origin.Position + Vector2.Multiply(new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)), distance + radius + origin.Radius);
             }
@@ -43,9 +43,9 @@ namespace OrbtNN
         {
             distance -= mass * (float)game_time.ElapsedGameTime.TotalSeconds;
         }
-        protected virtual void Modular()
+        protected virtual void Move(float angle)
         {
-            if (angle > 2 * (float)Math.PI) angle -= 2 * (float)Math.PI;
+            this.angle += angle;
         }
         public Blackhole Pivot { get => origin; }
         public float Mass { set => mass = value; get => mass; }

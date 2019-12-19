@@ -41,7 +41,7 @@ namespace OrbtNN
         {
             get => radius;
         }
-        internal float Opacity
+        public float Opacity
         {
             get => opacity;
             set => opacity = value;

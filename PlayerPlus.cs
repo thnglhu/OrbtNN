@@ -13,13 +13,15 @@ namespace OrbtNN
         public static readonly int RAY = 30;
         public static int MAX_DISTANCE = 300;
         public float[] distances;
+        public bool Display { get; set; } = true;
+        public float Time { get; private set; } = 0f;
         public Color[] colors;
         Vector2 ToCenter = new Vector2();
         float start_time = float.PositiveInfinity, last_time = 0f;
         public PlayerPlus(GameController controller) : base(controller)
         {
-            distances = new float[RAY + 1];
-            colors = new Color[RAY + 1];
+            distances = new float[RAY];
+            colors = new Color[RAY];
         }
         public override void Initialize(Blackhole origin, Sprite sprite, float angle, float distance, float radius, float mass, float velocity)
         {
@@ -33,21 +35,16 @@ namespace OrbtNN
         public override void Draw()
         {
             base.Draw();
-            for (int index = 1; index < RAY; index++)
-            {
-                Vector2 end = GameController.Rotate(ToCenter, -index * Math.PI / RAY) * distances[index] * MAX_DISTANCE;
-                controller.DrawVector(Position, Position + end, colors[index]);
-            }
-            for (int i = 0; i < distances.Length; i++)
-            {
-                distances[i] = 1;
-                colors[i] = Color.Green;
-            }
-
+            if (Display)
+                for (int index = 0; index < RAY; index++)
+                {
+                    Vector2 end = GameController.Rotate(ToCenter, -(index + 1) * Math.PI / (RAY + 2)) * distances[index] * MAX_DISTANCE;
+                    controller.DrawLine(Position, Position + end, colors[index]);
+                }
         }
-        float next_input = 0, next_time = 0.005f;
         public override void Update(GameTime game_time = null)
         {
+            // Time += (float)game_time.ElapsedGameTime.TotalSeconds;
             if (game_time != null)
             {
                 last_time = (float)game_time.TotalGameTime.TotalSeconds;
@@ -55,6 +52,11 @@ namespace OrbtNN
             }
             base.Update(game_time);
             ToCenter = Vector2.Normalize(Pivot.Position - Position);
+            for (int i = 0; i < distances.Length; i++)
+            {
+                distances[i] = 1;
+                colors[i] = Color.Green;
+            }
         }
         static int Orientation(Vector2 p1, Vector2 p2, Vector2 p3)
         {
@@ -80,9 +82,9 @@ namespace OrbtNN
             if (l > MAX_DISTANCE) return;
             l += circle.Radius;
             if (Orientation(Pivot.Position, Position, circle.Position) == 1) return;
-            for (int index = 1; index < RAY; index++)
+            for (int index = 0; index < RAY; index++)
             {
-                Vector2 end = Position + GameController.Rotate(ToCenter, -index * Math.PI / RAY) * distances[index];
+                Vector2 end = Position + GameController.Rotate(ToCenter, -(index + 1) * Math.PI / (RAY + 2)) * distances[index];
                 Vector2 A, B;
                 A = end - Position;
                 B = circle.Position - Position;

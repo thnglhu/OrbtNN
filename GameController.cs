@@ -52,7 +52,7 @@ namespace OrbtNN
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            manager = new GameManager(this, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
+            manager = new GameManager(this, graphics.PreferredBackBufferWidth - 200, graphics.PreferredBackBufferHeight);
             // TODO: use this.Content to load your game content here
         }
 
@@ -78,6 +78,7 @@ namespace OrbtNN
             KeyboardState keyboard = Keyboard.GetState();
             if (keyboard.IsKeyDown(Keys.Space)) manager.Press();
             else manager.Release();
+            manager.Debug(keyboard.NumLock);
             base.Update(gameTime);
         }
 
@@ -94,9 +95,13 @@ namespace OrbtNN
             spriteBatch.End();
             base.Draw(gameTime);
         }
-        public void DrawString(Vector2 position, string text)
+        public void DrawString(Vector2 position, string text, Color color, Align align = Align.CORNER)
         {
-            spriteBatch.DrawString(font, text, Vector2.Add(position, -Vector2.Multiply(font.MeasureString(text), 0.5f)), Color.White);
+            if (align == Align.CENTER)
+            {
+                position = Vector2.Add(position, -Vector2.Multiply(font.MeasureString(text), 0.5f));
+            }
+            spriteBatch.DrawString(font, text, position, color);
         }
         public void DrawLine(Vector2 begin, Vector2 end, Color color, int width = 1)
         {
@@ -115,15 +120,18 @@ namespace OrbtNN
             DrawLine(end, Vector2.Add(end, Rotate(extra, delta)), color, width);
             DrawLine(end, Vector2.Add(end, Rotate(extra, -delta)), color, width);
         }
-        public void DrawTexture(Texture2D texture, Vector2 position, float opacity = 1f)
+        public void DrawTexture(Texture2D texture, Vector2 position, float opacity = 1f, Align align = Align.CENTER)
         {
-            position = Vector2.Add(position, new Vector2(-texture.Width / 2, -texture.Height / 2));
+            if (align == Align.CENTER)
+            {
+                position = Vector2.Add(position, new Vector2(-texture.Width / 2, -texture.Height / 2));
+            }
             spriteBatch.Draw(texture, position, Color.White * opacity);
         }
-        public void DrawSprite(Sprite sprite, Vector2 position, float opacity = 1f)
+        public void DrawSprite(Sprite sprite, Vector2 position, float opacity = 1f, Align align = Align.CENTER)
         {
             Texture2D texture = sprite.Current;
-            DrawTexture(texture, position, opacity);
+            DrawTexture(texture, position, opacity, align);
         }
         public static Vector2 Rotate(Vector2 vector, double angle)
         {
