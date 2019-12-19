@@ -10,15 +10,17 @@ namespace OrbtNN
 {
     class GameManager
     {
-        static float SCALE = 1f;
+        static float SCALE = 2f;
         static int player_vel = 400;
         static int player_mas = 300;
+        Random random = new Random();
         GameController controller;
         // HashSet<Planet> planets = new HashSet<Planet>();
         Planet[] planets = new Planet[360];
-        Computer player;
+        // Computer player;
+        Player player;
         Blackhole blackhole;
-        float next_spawn, spawn_time = 0.2f;
+        float next_spawn, spawn_time = 0.15f;
         int width, height;
         float threshhold;
         public GameManager(GameController controller, int width, int height)
@@ -30,7 +32,8 @@ namespace OrbtNN
             blackhole = new Blackhole(controller);
             blackhole.Initialize(SpriteFactory.GetSprite("Blackhole"), new Vector2(width / 2, height / 2), 10);
             blackhole.Extra.Add(SpriteFactory.GetSprite("BlackHoleCover"));
-            player = new Computer(controller, 100);
+            // player = new Computer(controller, 100);
+            player = new Player(controller);
             player.Maximum = 200;
             player.Initialize(blackhole, SpriteFactory.GetSprite("Earth"), 0, 250f, 10, player_mas * SCALE, player_vel * SCALE);
             next_spawn = 0;
@@ -39,7 +42,6 @@ namespace OrbtNN
         {
             player.Update(game_time);
             blackhole.Update(game_time);
-            Random random = new Random();
             next_spawn -= (float)game_time.ElapsedGameTime.TotalSeconds;
             if (next_spawn <= 0)
             {
@@ -138,7 +140,7 @@ namespace OrbtNN
         }
         public void Debug(bool value)
         {
-            if (player.Display != value) player.Display = value;
+            // if (player.Display != value) player.Display = value;
         }
     }
 }

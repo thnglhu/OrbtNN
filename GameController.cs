@@ -78,7 +78,7 @@ namespace OrbtNN
             KeyboardState keyboard = Keyboard.GetState();
             if (keyboard.IsKeyDown(Keys.Space)) manager.Press();
             else manager.Release();
-            manager.Debug(keyboard.NumLock);
+            manager.Debug(!keyboard.NumLock);
             base.Update(gameTime);
         }
 

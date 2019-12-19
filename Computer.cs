@@ -42,12 +42,48 @@ namespace OrbtNN
                 return network.Activate(player.distances);
             }
         }
+        class Graph
+        {
+            GameController controller;
+            List<decimal> records = new List<decimal>();
+            decimal max = 0;
+            public Graph(GameController controller)
+            {
+                this.controller = controller;
+            }
+            public void Add(decimal value)
+            {
+                if (value > max) max = value;
+                records.Add(value);
+            }
+            public void EditLast(decimal value)
+            {
+                if (value > max) max = value;
+                records[records.Count - 1] = value;
+            }
+            public void Draw(Vector2 position, int width, int height)
+            {
+                int count = records.Count;
+                for (int index = 0; max != 0 && index < count - 1 && count > 1; index++)
+                {
+                    Vector2 begin = new Vector2(
+                        position.X + (float)width * index / (count - 1),
+                        position.Y + height - (float)(height * records[index] / max));
+                    Vector2 end = new Vector2(
+                        position.X + (float)width * (index + 1) / (count - 1),
+                        position.Y + height - (float)(height * records[index + 1] / max));
+                    controller.DrawLine(begin, end, Color.Cyan);
+                }
+
+            }
+        }
         Packed[] players;
         int number, remain;
         int generation = 0;
         bool fresh = true;
         Sprite window;
         static Vector2 delta = new Vector2(1080, 0);
+        Graph graph;
         public bool Display
         {
             get => display;
@@ -68,12 +104,14 @@ namespace OrbtNN
                 players[index].Name = $"Earth-G1-{index + 1}";
             }
             window = SpriteFactory.GetSprite("Window");
+            graph = new Graph(controller);
         }
         public override void Initialize(Blackhole origin, Sprite sprite, float angle, float distance, float radius, float mass, float velocity)
         {
             generation++;
             remain = number;
             int start = 1;
+            graph.Add(players[0].Fitness);
             if (!fresh)
             {
                 for (int index = number / 3; index < 2 * number / 3; index++)
@@ -116,6 +154,7 @@ namespace OrbtNN
                 tag.Draw(delta + offset);
                 offset.Y += 55;
             }
+            graph.Draw(new Vector2(0, 0), 500, 500);
         }
         float time = 0;
         private bool display = false;
@@ -152,6 +191,7 @@ namespace OrbtNN
                     A.Fitness
                     ));
             }
+            graph.EditLast(players[0].Fitness);
         }
         public override bool Check(Planet planet)
         {
