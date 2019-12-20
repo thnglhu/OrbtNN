@@ -154,7 +154,8 @@ namespace OrbtNN
                 tag.Draw(delta + offset);
                 offset.Y += 55;
             }
-            graph.Draw(new Vector2(0, 0), 500, 500);
+            graph.Draw(new Vector2(1085, 570), 190, 100);
+            players[0].Network.Draw(controller, new Vector2(400, 400));
         }
         float time = 0;
         private bool display = false;
