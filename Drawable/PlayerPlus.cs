@@ -5,16 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 
-namespace OrbtNN
+namespace OrbtNN.Drawable
 {
     class PlayerPlus : Player
     {
         public static float SCALE = 0.25f;
-        public static readonly int RAY = 30;
+        public static readonly int RAY = 25;
         public static int MAX_DISTANCE = 300;
         public float[] distances;
         public bool Display { get; set; } = true;
         public float Time { get; private set; } = 0f;
+        public string Cause { get; set; } = "";
         public Color[] colors;
         Vector2 ToCenter = new Vector2();
         float start_time = float.PositiveInfinity, last_time = 0f;
@@ -51,7 +52,7 @@ namespace OrbtNN
                 if (start_time > last_time) start_time = last_time;
             }
             base.Update(game_time);
-            ToCenter = Vector2.Normalize(Pivot.Position - Position);
+            ToCenter = Vector2.Normalize(Blackhole.Position - Position);
             for (int i = 0; i < distances.Length; i++)
             {
                 distances[i] = 1;
@@ -66,22 +67,26 @@ namespace OrbtNN
 
             return (val > 0) ? 1 : 2; // clock or counterclock wise 
         }
-        public override bool Check(Planet planet)
+        public override bool Check(Asteroid planet)
         {
             Detect(planet);
-            return base.Check(planet);
+            bool result = base.Check(planet);
+            if (result) Cause = "Crashed";
+            return result;
         }
         public override bool Check(Blackhole blackhole)
         {
             Detect(blackhole);
-            return base.Check(blackhole);
+            bool result = base.Check(blackhole);
+            if (result) Cause = "Sucked";
+            return result;
         }
         public void Detect(CircularObject circle)
         {
             float l = Distance(this, circle) + Radius;
             if (l > MAX_DISTANCE) return;
             l += circle.Radius;
-            if (Orientation(Pivot.Position, Position, circle.Position) == 1) return;
+            if (Orientation(Blackhole.Position, Position, circle.Position) == 1) return;
             for (int index = 0; index < RAY; index++)
             {
                 Vector2 end = Position + GameController.Rotate(ToCenter, -(index + 1) * Math.PI / (RAY + 2)) * distances[index];

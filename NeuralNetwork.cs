@@ -54,18 +54,18 @@ namespace OrbtNN
         }
         public void Draw(GameController controller, Vector2 position)
         {
-            float dx = 10, dy = 100;
-            Vector2 output = position + new Vector2(0, 2 * dy);
-            for (int hidden_index = 0; hidden_index < hidden_number; hidden_index++)
-            {
-                Vector2 begin = position + new Vector2(-dx * hidden_number / 4 + dx * hidden_index / 2, dy);
-                for (int input_index = 0; input_index < input_number; input_index++)
-                {
-                    Vector2 end = position + new Vector2(-dx * input_number / 2 + dx * input_index, 0);
-                    controller.DrawLine(begin, end, new Color(1 - input[input_index], 1, input[input_index]));
-                }
-                controller.DrawLine(begin, output, new Color(1 - (hidden[hidden_index] + 1) / 2, 1, (hidden[hidden_index] + 1) / 2));
-            }
+            //float dx = 10, dy = 100;
+            //Vector2 output = position + new Vector2(0, 2 * dy);
+            //for (int hidden_index = 0; hidden_index < hidden_number; hidden_index++)
+            //{
+            //    Vector2 begin = position + new Vector2(-dx * hidden_number / 4 + dx * hidden_index / 2, dy);
+            //    for (int input_index = 0; input_index < input_number; input_index++)
+            //    {
+            //        Vector2 end = position + new Vector2(-dx * input_number / 2 + dx * input_index, 0);
+            //        controller.DrawLine(begin, end, new Color(1 - input[input_index], 1, input[input_index]));
+            //    }
+            //    controller.DrawLine(begin, output, new Color(1 - (hidden[hidden_index] + 1) / 2, 1, (hidden[hidden_index] + 1) / 2));
+            //}
         }
         public NeuralNetwork Clone()
         {
@@ -77,7 +77,7 @@ namespace OrbtNN
         public static NeuralNetwork Mutate(NeuralNetwork source)
         {
             NeuralNetwork clone = source.Clone();
-            double chance = 0.5;
+            double chance = 0.8;
             int bound = clone.hidden_number * (clone.input_number + 1);
             for (int i = 0; i < (int)(clone.hidden_number * (clone.input_number + 1) *chance); i++)
             {

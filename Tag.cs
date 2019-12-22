@@ -12,7 +12,7 @@ namespace OrbtNN
         Sprite background, avatar = null;
         string text;
         GameController controller;
-        static Vector2 delta = new Vector2(8, 8);
+        static Vector2 delta = new Vector2(25, 25);
 
         public Sprite Avatar { get => avatar; set => avatar = value; }
         public string Text { get => text; set => text = value; }
@@ -25,8 +25,8 @@ namespace OrbtNN
         public void Draw(Vector2 position)
         {
             controller.DrawSprite(background, position, 1f, Align.CORNER);
-            controller.DrawSprite(avatar, position + delta, 1f, Align.CORNER);
-            controller.DrawString(position + delta + new Vector2(40, 0), text, Color.Black, Align.CORNER);
+            controller.DrawSprite(avatar, position + delta);
+            controller.DrawString(position + delta + new Vector2(23, -21), text, Color.Black, Align.CORNER);
         }
     }
 }

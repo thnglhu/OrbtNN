@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace OrbtNN
+namespace OrbtNN.Drawable
 {
-    class Player : Planet
+    class Player : Asteroid
     {
         float backup;
         float total;
         private bool alive = true;
         protected float max = float.PositiveInfinity;
-        HashSet<Planet> bonus = new HashSet<Planet>();
+        HashSet<Asteroid> bonus = new HashSet<Asteroid>();
         public Player(GameController controller) : base(controller) { }
         public virtual void Initialize(Blackhole origin, Sprite sprite, float angle, float distance, float radius, float mass, float velocity)
         {
@@ -40,7 +40,7 @@ namespace OrbtNN
             base.Move(angle);
             total += angle;
         }
-        public virtual bool Check(Planet planet)
+        public virtual bool Check(Asteroid planet)
         {
             float dist = Distance(this, planet);
             if (dist < 0) return true;

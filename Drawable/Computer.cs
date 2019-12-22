@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrbtNN
+namespace OrbtNN.Drawable
 {
     internal class Computer : Player
     {
@@ -13,17 +13,21 @@ namespace OrbtNN
         {
             private PlayerPlus player;
             private NeuralNetwork network;
+            private Tag tag;
             internal decimal Time { get; set; } = 0.1M;
             internal decimal Fitness { get; set; } = 0.1M;
+            internal Tag Tag { get => tag; set => tag = value; }
             internal int Score { get; set; } = 0;
             public string Name;
 
             internal PlayerPlus Player { get => player; set => player = value; }
             internal NeuralNetwork Network { get => network; set => network = value; }
+
             public Packed(GameController controller)
             {
                 Player = new PlayerPlus(controller);
                 Network = new NeuralNetwork(PlayerPlus.RAY, 5);
+                Tag = new Tag(controller);
             }
             public void Update(GameTime game_time)
             {
@@ -69,10 +73,11 @@ namespace OrbtNN
                     Vector2 begin = new Vector2(
                         position.X + (float)width * index / (count - 1),
                         position.Y + height - (float)(height * records[index] / max));
+
                     Vector2 end = new Vector2(
                         position.X + (float)width * (index + 1) / (count - 1),
                         position.Y + height - (float)(height * records[index + 1] / max));
-                    controller.DrawLine(begin, end, Color.Cyan);
+                    controller.DrawLine(begin, end, Color.Red, 2);
                 }
 
             }
@@ -116,29 +121,35 @@ namespace OrbtNN
             {
                 for (int index = number / 3; index < 2 * number / 3; index++)
                 {
-                    players[index].Network = NeuralNetwork.Mutate(players[index - number / 3].Network);
-                    players[index].Name = $"Earth-GM{generation}-{start++}";
+                    players[index].Network = NeuralNetwork.Mutate(players[0].Network);
+                    players[index].Name = $"Earth-G{generation}-{start++}";
                 }
                 for (int index = 2 * number / 3; index < number; index++)
                 {
                     players[index].Network = NeuralNetwork.CrossOver(players[index - 2 * number / 3].Network, players[index - 2 * number / 3 + 1].Network);
-                    players[index].Name = $"Earth-GC{generation}-{start++}";
+                    players[index].Name = $"Earth-G{generation}-{start++}";
                 }
             }
             else fresh = false;
             for (int index = 0; index < number; index++)
             {
-                players[index].Player.Initialize(origin, sprite.Clone(), angle + index * 2 * (float)Math.PI / number, distance, radius, mass, velocity);
+                players[index].Player.Initialize(origin, sprite.Clone(), 0/*angle + index * 2 * (float)Math.PI / number*/, distance, radius, mass, velocity);
                 players[index].Time = 1;
+                players[index].Tag.Avatar = SpriteFactory.GetSprite("Earth");
             }
             Array.ForEach(players, player => player.Time = 0);
         }
         public override void Draw()
         {
+            bool found = false;
             for (int index = 0; index < number; index++)
             {
                 Packed player = players[index];
-                if (index == 0) player.Player.Opacity = 1f;
+                if (!found && player.Player.Alive)
+                {
+                    player.Player.Opacity = 1f;
+                    found = true;
+                }
                 else player.Player.Opacity = 0.2f;
                 if (player.Player.Alive) player.Player.Draw();
             }
@@ -146,11 +157,13 @@ namespace OrbtNN
             controller.DrawSprite(window, delta , 1f, Align.CORNER);
             for (int index = 0; index < Math.Min(number, 10); index++)
             {
-                Tag tag = new Tag(controller);
+                Tag tag = players[index].Tag;
                 tag.Text = 
                     $"Name: {players[index].Name}\n" +
-                    $"Fitness: {players[index].Fitness.ToString("N6")}\n" +
-                    $"Score: {players[index].Score}";
+                    $"Fitness: {players[index].Fitness.ToString("N3")}\n" +
+                    $"Score: {players[index].Score}\n";
+                if (players[index].Player.Alive) tag.Text += "Status: Alive";
+                else tag.Text += $"Status: {players[index].Player.Cause}";
                 tag.Draw(delta + offset);
                 offset.Y += 55;
             }
@@ -194,7 +207,7 @@ namespace OrbtNN
             }
             graph.EditLast(players[0].Fitness);
         }
-        public override bool Check(Planet planet)
+        public override bool Check(Asteroid planet)
         {
             Array.ForEach(players, player =>
             {
@@ -204,6 +217,7 @@ namespace OrbtNN
                     {
                         remain--;
                         player.Player.Alive = false;
+                        player.Tag.Avatar = SpriteFactory.GetSprite("Earth2");
                     }
                 }
             });
@@ -219,6 +233,8 @@ namespace OrbtNN
                     {
                         remain--;
                         player.Player.Alive = false;
+                        player.Tag.Avatar = SpriteFactory.GetSprite("Earth2");
+                        blackhole.Affect(player.Player);
                     }
                 }
             });

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OrbtNN.Drawable;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,13 +11,13 @@ namespace OrbtNN
 {
     class GameManager
     {
-        static float SCALE = 1f;
+        static float SCALE = 2f;
         static int player_vel = 400;
         static int player_mas = 300;
         Random random = new Random();
         GameController controller;
         // HashSet<Planet> planets = new HashSet<Planet>();
-        Planet[] planets = new Planet[360];
+        Asteroid[] planets = new Asteroid[360];
         Computer player;
         //Player player;
         Blackhole blackhole;
@@ -29,11 +30,12 @@ namespace OrbtNN
             this.width = width;
             this.height = height;
             threshhold = (float)Math.Atan((float)height / width);
-            blackhole = new Blackhole(controller);
+            blackhole = new Blackhole(controller, width, height);
             blackhole.Initialize(SpriteFactory.GetSprite("Blackhole"), new Vector2(width / 2, height / 2), 10);
-            blackhole.Extra.Add(SpriteFactory.GetSprite("BlackHoleCover"));
+            Sprite cover = SpriteFactory.GetSprite("BlackHoleCover");
+            cover.Opacity = 0.8f;
+            blackhole.Extra.Add(cover);
             player = new Computer(controller, 100);
-            // player = new Player(controller);
             player.Maximum = 200;
             player.Initialize(blackhole, SpriteFactory.GetSprite("Earth"), 0, 250f, 10, player_mas * SCALE, player_vel * SCALE);
             next_spawn = 0;
@@ -46,7 +48,7 @@ namespace OrbtNN
             if (next_spawn <= 0)
             {
                 next_spawn += spawn_time / SCALE;
-                Planet planet = new Planet(controller);
+                Asteroid planet = new Asteroid(controller);
                 float radius = 10;
                 float mass = 100;// + (float)(random.NextDouble() * 200);
                 int int_angle = random.Next(0, 360);
@@ -74,7 +76,7 @@ namespace OrbtNN
             }
             for (int index = 0; index < 360; index++)
             {
-                Planet planet = planets[index];
+                Asteroid planet = planets[index];
                 if (planet != null)
                 {
                     if (CircularObject.Collide(blackhole, planet))
@@ -99,7 +101,7 @@ namespace OrbtNN
             blackhole.Draw();
             for (int int_angle = 0; int_angle < planets.Length; int_angle++)
             {
-                Planet planet = planets[int_angle];
+                Asteroid planet = planets[int_angle];
                 if (planet == null)
                 {
                     //float angle = (float)(int_angle * Math.PI / 180 - Math.PI);

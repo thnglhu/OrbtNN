@@ -19,9 +19,11 @@ namespace OrbtNN
         int index;
         float delay = 1f;
         float next = 0;
+        float opacity;
         public Sprite(params Texture2D[] spritesheet)
         {
             this.spritesheet = spritesheet;
+            opacity = 1f;
         }
         public void Update(GameTime game_time)
         {
@@ -44,6 +46,11 @@ namespace OrbtNN
         public Sprite Clone()
         {
             return new Sprite(spritesheet);
+        }
+        public float Opacity
+        {
+            get => opacity;
+            set => opacity = value;
         }
     }
 }
